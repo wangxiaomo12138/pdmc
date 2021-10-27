@@ -24,6 +24,9 @@ namespace PDMCProject
         public string detailUrl = "http://localhost:8081/detail";
         //下载文件接口地址
         public string downLoadUrl = "http://localhost:8081/img";
+        public string base64PublicKey = "MyKey";
+        public string privateKey;
+
         Word.Application wordApp;
         Microsoft.Office.Tools.CustomTaskPane ctp;
         private void ThisAddIn_Startup(object sender, System.EventArgs e)

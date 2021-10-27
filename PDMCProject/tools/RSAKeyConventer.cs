@@ -16,6 +16,20 @@ namespace PDMCProject.tools
 {
     class RSAKeyConverter
     {
+        public static string GenerateRSASecretKey(int keySize)
+        {
+            string publicKey = null;
+            string privateKey = null;
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(keySize))
+            {
+                privateKey = FromXmlPrivateKey(rsa.ToXmlString(true));
+                publicKey = FromXmlPublicKey(rsa.ToXmlString(false));
+                Globals.ThisAddIn.base64PublicKey = publicKey;
+                Globals.ThisAddIn.privateKey = privateKey;
+            }
+            return publicKey;
+        }
+
         /// <summary>
         /// xml private key -> base64 private key string
         /// </summary>
