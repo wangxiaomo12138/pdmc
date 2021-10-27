@@ -15,6 +15,8 @@ namespace PDMCProject
     public partial class DetailPage : UserControl
     {
         Word.Application wordApp  = Globals.ThisAddIn.Application;
+        List<VersionDto> listRedis;
+        string name;
         public DetailPage()
         {
             InitializeComponent();
@@ -24,6 +26,8 @@ namespace PDMCProject
             InitializeComponent();
             this.documentName.Text = documentName;
             this.process.Text = process;
+            this.name = documentName;
+            this.listRedis = dataList;
             this.processType.Text = processType;
             this.dataGridView1.DataSource = dataList;
             this.dataGridView1.Visible = true;
@@ -81,8 +85,11 @@ namespace PDMCProject
                     //记录选中的目录  
                     defaultPath = dialog.SelectedPath;
                 }
+                VersionDto v = listRedis.ToArray()[e.RowIndex];
                 JObject jb = new JObject();
-                string result = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString());
+                jb.Add("hash_code",Globals.ThisAddIn.userInfo);
+                jb.Add("file_url",v.Link);
+                string result = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString(),this.name+v.Version);
                 MessageBox.Show(result + "下载成功！");
             }
         }

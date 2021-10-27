@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Windows.Forms;
 
 namespace PDMCProject
 {
@@ -90,7 +91,7 @@ namespace PDMCProject
         }
 
 
-        public static string HttpDownloadFile(string url, string path,string value)
+        public static string HttpDownloadFile(string url, string path,string value,string fileName)
         {
             // 设置参数
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
@@ -106,9 +107,20 @@ namespace PDMCProject
             HttpWebResponse response = request.GetResponse() as HttpWebResponse;
             //直到request.GetResponse()程序才开始向目标网页发送Post请求
             Stream responseStream = response.GetResponseStream();
-            string fileName = response.Headers.Get("fileName");
             //创建本地文件写入流
-            Stream stream = new FileStream(path+"/"+fileName, FileMode.Create,FileAccess.ReadWrite);
+
+            //获取当前文件夹路径
+            string currPath = Application.StartupPath;
+            //检查是否存在文件夹
+            string subPath = currPath + "/temp/";
+            if (false == System.IO.Directory.Exists(subPath))
+            {
+                //创建pic文件夹
+                System.IO.Directory.CreateDirectory(subPath);
+            }
+            //确认创建文件夹是否成功，如果不成功，则直接在当前目录保存
+            
+            Stream stream = new FileStream(subPath + "/"+fileName+".doc", FileMode.Create,FileAccess.ReadWrite);
             byte[] bArr = new byte[1024];
             int size = responseStream.Read(bArr, 0, (int)bArr.Length);
             while (size > 0)
@@ -118,7 +130,7 @@ namespace PDMCProject
             }
             stream.Close();
             responseStream.Close();
-            return fileName;
+            return subPath+"/"+fileName+".doc";
         }
 
         public static string get_uft8(string unicodeString)
