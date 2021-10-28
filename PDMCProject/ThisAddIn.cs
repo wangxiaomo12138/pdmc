@@ -78,7 +78,7 @@ namespace PDMCProject
                 }
 
             }
-            string key = FindFather(currentLine,0, list);
+            string key = FindFather("",currentLine,0, list);
             string[] split = key.Split(';');
             for(int i = split.Length-1;i >= 0; i--)
             {
@@ -96,9 +96,8 @@ namespace PDMCProject
             ctp.Visible = true;
         }
 
-        public  string FindFather(int currentLine,int currentLevel,List<OutLineInfo> list)
+        public  string FindFather(string key,int currentLine,int currentLevel,List<OutLineInfo> list)
         {
-            string key = null;
             for (int i = 0; i < list.Count; i++)
             {
                 OutLineInfo current = list.ElementAt(i);
@@ -107,12 +106,11 @@ namespace PDMCProject
                 {
                     next = list.ElementAt(i + 1);
                 }
-           
                 if((((current.lineNum- currentLine) <= 0  && null != next && (next.lineNum - currentLine) >= 0) ||  ((current.lineNum - currentLine) <= 0 && null == next) )
                         && ((currentLevel == 0 ) || (currentLevel != 0 && current.level < currentLevel)))
                 {
                     key += (";" + current.name);
-                    FindFather(current.lineNum,current.level, list);
+                    key = FindFather(key,current.lineNum,current.level, list);
                 }
             }
             return key;
