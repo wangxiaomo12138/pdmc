@@ -91,7 +91,7 @@ namespace PDMCProject
         }
 
 
-        public static string HttpDownloadFile(string url, string path,string value,string fileName)
+        public static string HttpDownloadFile(string url, string path,string value,string fileName,int type)
         {
             // 设置参数
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
@@ -111,16 +111,24 @@ namespace PDMCProject
 
             //获取当前文件夹路径
             string currPath = Application.StartupPath;
+            string subPath = null;
             //检查是否存在文件夹
-            string subPath = currPath + "/temp/";
+            if (0 == type)
+            {
+                subPath = path;
+            }
+            else
+            {
+                subPath = path + "/temp/" + GetTimeStamp();
+            }
             if (false == System.IO.Directory.Exists(subPath))
             {
                 //创建pic文件夹
                 System.IO.Directory.CreateDirectory(subPath);
             }
-            //确认创建文件夹是否成功，如果不成功，则直接在当前目录保存
+            //确认创建文件夹是否成功，如果不成功，则直接在当前目录保
             
-            Stream stream = new FileStream(subPath + "/"+fileName+".doc", FileMode.Create,FileAccess.ReadWrite);
+            Stream stream = new FileStream(subPath  + "/" +fileName, FileMode.Create,FileAccess.ReadWrite);
             byte[] bArr = new byte[1024];
             int size = responseStream.Read(bArr, 0, (int)bArr.Length);
             while (size > 0)
@@ -130,7 +138,7 @@ namespace PDMCProject
             }
             stream.Close();
             responseStream.Close();
-            return subPath+"/"+fileName+".doc";
+            return subPath+"/"+fileName;
         }
 
         public static string get_uft8(string unicodeString)
@@ -139,6 +147,11 @@ namespace PDMCProject
             Byte[] encodedBytes = utf8.GetBytes(unicodeString);
             String decodedString = utf8.GetString(encodedBytes);
             return decodedString;
+        }
+        public static string GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds).ToString();
         }
     }
 }

@@ -77,12 +77,14 @@ namespace PDMCProject
                     {
                         JObject data = JObject.Parse(result.GetValue("data").ToString());
                         JObject basic = JObject.Parse(data.GetValue("basic_info").ToString());
+                        string fileName = data.GetValue("file_name").ToString();
                         JavaScriptSerializer Serializer = new JavaScriptSerializer();
                         List<VersionDto> list = Serializer.Deserialize<List<VersionDto>>(data.GetValue("version").ToString());
                         DetailPage detail = new DetailPage(basic.GetValue("document_name").ToString(),
                             basic.GetValue("process").ToString(),
                             basic.GetValue("process_type").ToString(),
-                            list);
+                            list,
+                            fileName.Split('.')[1]);
                         ctp = Globals.ThisAddIn.CustomTaskPanes.Add(detail, "文档详情");
                         ctp.Visible = true;
                     }
@@ -164,7 +166,6 @@ namespace PDMCProject
                         MessageBox.Show("未搜索到结果");
                         return;
                     }
-                    this.dataGridView1.Visible = true;
                     if(int.Parse(data.GetValue("total").ToString()) % this.pageSize == 0)
                     {
                         this.totalPage.Text = "共 " + (int.Parse(data.GetValue("total").ToString()) / this.pageSize).ToString() 
@@ -176,7 +177,14 @@ namespace PDMCProject
                             + " 页，当前第 " + data.GetValue("currentPage").ToString() + "页";
                     }
                     this.redisData = data;
-                    this.dataGridView1.DataSource = list;
+                    this.flowLayoutPanel1.Controls.Clear();
+                    foreach (content c in list)
+                    {
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        this.flowLayoutPanel1.Controls.Add(d);
+                    }
+                    this.flowLayoutPanel1.Visible = true;
+                    this.flowLayoutPanel1.Enabled = true;
                     this.totalPage.Visible = true;
                     this.up.Visible = true;
                     this.down.Visible = true;
@@ -201,6 +209,8 @@ namespace PDMCProject
             public string author { get; set; }
             public string url { get; set; }
             public string source { get; set; }
+            public string category { get; set; }
+            public string from { get; set; }
 
 
         }
@@ -260,7 +270,12 @@ namespace PDMCProject
                             + " 页，当前第 " + data.GetValue("currentPage").ToString() + "页";
                     }
                     this.redisData = data;
-                    this.dataGridView1.DataSource = list;
+                    this.flowLayoutPanel1.Controls.Clear();
+                    foreach(content c in list)
+                    {
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        this.flowLayoutPanel1.Controls.Add(d);
+                    }
                 }
             }
         }
@@ -314,7 +329,12 @@ namespace PDMCProject
                             + " 页，当前第 " + data.GetValue("currentPage").ToString() + "页";
                     }
                     this.redisData = data;
-                    this.dataGridView1.DataSource = list;
+                    this.flowLayoutPanel1.Controls.Clear();
+                    foreach (content c in list)
+                    {
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        this.flowLayoutPanel1.Controls.Add(d);
+                    }
                 }
             }
         }
@@ -325,6 +345,11 @@ namespace PDMCProject
         }
 
         private void keyWord_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
         }

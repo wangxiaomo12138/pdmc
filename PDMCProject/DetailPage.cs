@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Office.Interop.Word;
 using Newtonsoft.Json.Linq;
 using Word = Microsoft.Office.Interop.Word;
 
@@ -17,11 +18,12 @@ namespace PDMCProject
         Word.Application wordApp  = Globals.ThisAddIn.Application;
         List<VersionDto> listRedis;
         string name;
+        string fileName;
         public DetailPage()
         {
             InitializeComponent();
         }
-        public DetailPage(string documentName, string process, string processType, List<VersionDto> dataList)
+        public DetailPage(string documentName, string process, string processType, List<VersionDto> dataList,string fileName)
         {
             InitializeComponent();
             this.documentName.Text = documentName;
@@ -31,6 +33,7 @@ namespace PDMCProject
             this.processType.Text = processType;
             this.dataGridView1.DataSource = dataList;
             this.dataGridView1.Visible = true;
+            this.fileName = fileName;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -61,11 +64,44 @@ namespace PDMCProject
             MessageBox.Show(e.ColumnIndex.ToString());
             if (e.ColumnIndex == 2)
             {
-                this.webBrowser1.Url = new Uri("https://www.cnblogs.com/greatverve/archive/2011/07/07/WebBrowser.html");
-                //this.webBrowser1.Url = new Uri(this.dataGridView1.SelectedRows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
-                this.webBrowser1.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(web_DocumentCompleted);
+                //获取当前文件夹路径
+                string currPath = System.Windows.Forms.Application.StartupPath;
+                VersionDto v = listRedis.ToArray()[e.RowIndex];
+                JObject jb = new JObject();
+                jb.Add("hash_code", Globals.ThisAddIn.userInfo);
+                jb.Add("file_url", v.Link);
+                this.detail.Visible = true;
+                this.detail.Text = "正在解析，请稍等";
+                string path = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, currPath, jb.ToString(), this.name + v.Version + "." + fileName,1);
+                Word.Application app = new Microsoft.Office.Interop.Word.Application();
+                Microsoft.Office.Interop.Word.Document doc = null;
+                object unknow = Type.Missing;
+                object file = path;
+                doc = app.Documents.Open(ref file,
+                ref unknow, ref unknow, ref unknow, ref unknow,
+                ref unknow, ref unknow, ref unknow, ref unknow,
+                ref unknow, ref unknow, ref unknow, ref unknow,
+                ref unknow, ref unknow, ref unknow);
+                StringBuilder sb = new StringBuilder();
+                foreach (Paragraph item in doc.Paragraphs)
+                {
+                    
+                    string style_Word = item.OutlineLevel.ToString();
+                    if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                    {
+                        string str = item.Range.Text;
+                        object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                        object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                        string name = str.Replace("\r","");
+                        name = name.Replace("\f", "");
+                        sb.AppendLine(name);
+                    }
 
-            }
+                }
+                
+                this.detail.Text = sb.ToString();
+                Ribbon1.DeleteDir(currPath+"/temp");
+            }   
             if (e.ColumnIndex == 0)
             {
                 string defaultPath = "";
@@ -89,7 +125,7 @@ namespace PDMCProject
                 JObject jb = new JObject();
                 jb.Add("hash_code",Globals.ThisAddIn.userInfo);
                 jb.Add("file_url",v.Link);
-                string result = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString(),this.name+v.Version);
+                string result = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString(),this.name+v.Version+"."+fileName,0);
                 MessageBox.Show(result + "下载成功！");
             }
         }

@@ -38,10 +38,10 @@ namespace PDMCProject
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Author = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Link = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Link = new System.Windows.Forms.DataGridViewLinkColumn();
             this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.act = new System.Windows.Forms.DataGridViewLinkColumn();
-            this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+            this.detail = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -136,6 +136,8 @@ namespace PDMCProject
             this.Link.HeaderText = "文本链接";
             this.Link.Name = "Link";
             this.Link.ReadOnly = true;
+            this.Link.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Link.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             // 
             // Version
             // 
@@ -152,19 +154,20 @@ namespace PDMCProject
             this.act.Text = "下载";
             this.act.UseColumnTextForLinkValue = true;
             // 
-            // webBrowser1
+            // detail
             // 
-            this.webBrowser1.Location = new System.Drawing.Point(49, 322);
-            this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-            this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(679, 408);
-            this.webBrowser1.TabIndex = 7;
+            this.detail.Location = new System.Drawing.Point(49, 340);
+            this.detail.Name = "detail";
+            this.detail.Size = new System.Drawing.Size(679, 388);
+            this.detail.TabIndex = 7;
+            this.detail.Text = "";
+            this.detail.Visible = false;
             // 
             // DetailPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.webBrowser1);
+            this.Controls.Add(this.detail);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.processType);
             this.Controls.Add(this.process);
@@ -190,9 +193,9 @@ namespace PDMCProject
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Author;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Link;
+        private System.Windows.Forms.DataGridViewLinkColumn Link;
         private System.Windows.Forms.DataGridViewTextBoxColumn Version;
         private System.Windows.Forms.DataGridViewLinkColumn act;
-        private System.Windows.Forms.WebBrowser webBrowser1;
+        private System.Windows.Forms.RichTextBox detail;
     }
 }

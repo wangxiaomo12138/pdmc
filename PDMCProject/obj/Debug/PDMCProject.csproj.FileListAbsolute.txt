@@ -123,3 +123,11 @@ F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDM
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.csproj.CoreCompileInputs.cache
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.dll
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.pdb
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Doc.dll
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.dll
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.dll
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Microsoft.mshtml.dll
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Doc.xml
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.xml
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.xml
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.ListDetail.resources

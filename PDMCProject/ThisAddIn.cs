@@ -48,6 +48,7 @@ namespace PDMCProject
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
             newContro2.Caption = "模板搜索";
             newContro2.Click += comButton_Click;
+            newContro1.Click += comButton_Click;
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -59,26 +60,39 @@ namespace PDMCProject
             string keyword = null;
             Word.Selection sec = wordApp.Selection.Words.Application.Selection;
             object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+            object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
             int currentLine = int.Parse(a.ToString());
+            int currentPage = int.Parse(b.ToString());
             MessageBox.Show(a.ToString());
             Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
             List<OutLineInfo> list = new List<OutLineInfo>();
             foreach (Paragraph item in doc.Paragraphs)
             {
-                var style_Word = (Microsoft.Office.Interop.Word.Style)item.get_Style();
-                if (style_Word.NameLocal != "正文")
+                string style_Word = item.OutlineLevel.ToString();
+                if (!style_Word.Equals("wdOutlineLevelBodyText"))
                 {
                     string str = item.Range.Text;
+                    object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
                     object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
                     OutLineInfo info = new OutLineInfo();
-                    info.name = str;
+                    info.name = str.Replace("\r","");
+                    info.name = info.name.Replace("\f", "");
                     info.lineNum = int.Parse(num.ToString());
-                    info.level = int.Parse(item.OutlineLevel.ToString().Replace("wdOutlineLevel",""));
+                    info.pageNum = int.Parse(page.ToString());
+                    info.level = int.Parse(item.OutlineLevel.ToString().Replace("wdOutlineLevel", ""));
                     list.Add(info);
                 }
 
             }
-            string key = FindFather("",currentLine,0, list);
+            string key = null;
+            if (sec.Paragraphs.First.OutlineLevel.ToString().Equals("wdOutlineLevelBodyText"))
+            { 
+                key = FindFather(key,currentLine, currentPage, 10, list);
+            }
+            else
+            {
+                key = FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, int.Parse(sec.Paragraphs.First.OutlineLevel.ToString()), list);
+            }
             string[] split = key.Split(';');
             for(int i = split.Length-1;i >= 0; i--)
             {
@@ -96,24 +110,35 @@ namespace PDMCProject
             ctp.Visible = true;
         }
 
-        public  string FindFather(string key,int currentLine,int currentLevel,List<OutLineInfo> list)
+        public  string FindFather(string key ,int currentLine,int currentPage,int currentLevel,List<OutLineInfo> list)
         {
-            for (int i = 0; i < list.Count; i++)
+            StringBuilder sb = new StringBuilder(key);
+            for (int i = list.Count -1; i >= 0 ; i--)
             {
-                OutLineInfo current = list.ElementAt(i);
-                OutLineInfo next = null;
-                if((i+1)!= list.Count)
+                OutLineInfo now = list.ElementAt(i);
+                if(now.pageNum > currentPage)
                 {
-                    next = list.ElementAt(i + 1);
+                    continue;
                 }
-                if((((current.lineNum- currentLine) <= 0  && null != next && (next.lineNum - currentLine) >= 0) ||  ((current.lineNum - currentLine) <= 0 && null == next) )
-                        && ((currentLevel == 0 ) || (currentLevel != 0 && current.level < currentLevel)))
+                if(now.pageNum == currentPage && i != 0)
                 {
-                    key += (";" + current.name);
-                    key = FindFather(key,current.lineNum,current.level, list);
+                    OutLineInfo next = list.ElementAt(i-1);
+                    if(((now.lineNum >= currentLine && next.lineNum <= currentLine) || now.lineNum < currentLine) && currentLevel > next.level) 
+                    {
+                       sb.Append(next.name + ";");
+                       return FindFather(sb.ToString(), next.lineNum, next.pageNum, next.level, list);
+                    }
+                }
+                if (now.pageNum < currentPage && i != 0)
+                {
+                    if(currentLevel > now.level)
+                    {
+                        sb.Append(now.name + ";");
+                        return FindFather(sb.ToString(), now.lineNum, now.pageNum, now.level, list);
+                    }
                 }
             }
-            return key;
+            return sb.ToString();
         }
 
         public class OutLineInfo
@@ -121,6 +146,8 @@ namespace PDMCProject
             public string name { get; set; }
             public int lineNum { get; set; }
             public int level { get; set; }
+
+            public int pageNum { get; set; }
         }
         #region VSTO 生成的代码
 

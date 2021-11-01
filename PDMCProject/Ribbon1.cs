@@ -26,6 +26,7 @@ namespace PDMCProject
         private void button1_Click(object sender, RibbonControlEventArgs e)
         {
             UserControl1 user = new UserControl1();
+            user.withTitle.Checked = true;
             ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文本搜索");
             ctp.Visible = true;
         }
