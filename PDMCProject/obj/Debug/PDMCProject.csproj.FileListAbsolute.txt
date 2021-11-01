@@ -131,3 +131,12 @@ F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spi
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.xml
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.xml
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.ListDetail.resources
+Y:\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.ListDetail.resources
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Doc.dll
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.dll
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.dll
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Microsoft.mshtml.dll
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Doc.xml
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.xml
+Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.xml
+Y:\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.csproj.CopyComplete

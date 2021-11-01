@@ -44,11 +44,12 @@ namespace PDMCProject
             Office.CommandBarButton newControl =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
             newControl.Caption = "标题搜索";
+            newControl.Click += comButton_Click;
             Office.CommandBarButton newContro2 =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
             newContro2.Caption = "模板搜索";
             newContro2.Click += comButton_Click;
-            newContro1.Click += comButton_Click;
+            
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
