@@ -43,19 +43,30 @@ namespace PDMCProject
 
             Office.CommandBarButton newControl =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
-            newControl.Caption = "标题搜索";
-            newControl.Click += comButton_Click;
+            newControl.Caption = "关键词搜索";
+            //添加按钮点击事件
+            newControl.Click += newControl_Click;
             Office.CommandBarButton newContro2 =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
-            newContro2.Caption = "模板搜索";
-            newContro2.Click += comButton_Click;
+            newContro2.Caption = "标题搜索";
+            //添加按钮点击事件
+            newContro2.Click += newContro2_Click;
             
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
         }
-        private void comButton_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
+        //按关键词搜索按钮事件
+        private void newControl_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
+        {
+            string keyword = wordApp.Selection.Words.Application.Selection.Text;
+            UserControl1 user = new UserControl1(keyword);
+            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "关键词搜索");
+            ctp.Visible = true;
+        }
+        //按标题搜索按钮点击事件
+        public void newContro2_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
         {
             //string keyword = wordApp.Selection.Words.Application.Selection.Text;
             string keyword = null;
@@ -111,7 +122,7 @@ namespace PDMCProject
             ctp.Visible = true;
         }
 
-        public  string FindFather(string key ,int currentLine,int currentPage,int currentLevel,List<OutLineInfo> list)
+        public static string FindFather(string key ,int currentLine,int currentPage,int currentLevel,List<OutLineInfo> list)
         {
             StringBuilder sb = new StringBuilder(key);
             for (int i = list.Count -1; i >= 0 ; i--)

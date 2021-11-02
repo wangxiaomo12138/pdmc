@@ -8,6 +8,7 @@ using Office = Microsoft.Office.Core;
 using Microsoft.Office.Tools.Word;
 using System.Windows.Forms;
 using System.IO;
+using Microsoft.Office.Interop.Word;
 
 namespace PDMCProject
 {
@@ -22,12 +23,60 @@ namespace PDMCProject
         {
             wordApp = Globals.ThisAddIn.Application;
         }
-
+            
+        //标题搜索
         private void button1_Click(object sender, RibbonControlEventArgs e)
         {
-            UserControl1 user = new UserControl1();
-            user.withTitle.Checked = true;
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文本搜索");
+            string keyword = null;
+            Word.Selection sec = wordApp.Selection.Words.Application.Selection;
+            object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+            object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+            int currentLine = int.Parse(a.ToString());
+            int currentPage = int.Parse(b.ToString());
+            MessageBox.Show(a.ToString());
+            Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
+            List<ThisAddIn.OutLineInfo> list = new List<ThisAddIn.OutLineInfo>();
+            foreach (Paragraph item in doc.Paragraphs)
+            {
+                string style_Word = item.OutlineLevel.ToString();
+                if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                {
+                    string str = item.Range.Text;
+                    object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                    object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                    ThisAddIn.OutLineInfo info = new ThisAddIn.OutLineInfo();
+                    info.name = str.Replace("\r", "");
+                    info.name = info.name.Replace("\f", "");
+                    info.lineNum = int.Parse(num.ToString());
+                    info.pageNum = int.Parse(page.ToString());
+                    info.level = int.Parse(item.OutlineLevel.ToString().Replace("wdOutlineLevel", ""));
+                    list.Add(info);
+                }
+
+            }
+            string key = null;
+            if (sec.Paragraphs.First.OutlineLevel.ToString().Equals("wdOutlineLevelBodyText"))
+            {
+                key = ThisAddIn.FindFather(key, currentLine, currentPage, 10, list);
+            }
+            else
+            {
+                key = ThisAddIn.FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, int.Parse(sec.Paragraphs.First.OutlineLevel.ToString()), list);
+            }
+            string[] split = key.Split(';');
+            for (int i = split.Length - 1; i >= 0; i--)
+            {
+                if (null != split[i] && !"".Equals(split[i]) && i != 0)
+                {
+                    keyword += (split[i] + ";");
+                }
+                if (null != split[i] && !"".Equals(split[i]) && i == 0)
+                {
+                    keyword += (split[i]);
+                }
+            }
+            UserControl1 user = new UserControl1(keyword);
+            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "标题搜索");
             ctp.Visible = true;
         }
 
@@ -36,7 +85,7 @@ namespace PDMCProject
             Globals.ThisAddIn.userInfo = null; 
             Globals.ThisAddIn.username = null; 
             Globals.ThisAddIn.user_password = null;
-            DeleteDir(Application.StartupPath + "/temp");
+            DeleteDir(System.Windows.Forms.Application.StartupPath + "/temp"); 
             MessageBox.Show("操作成功");
         }
 
@@ -82,5 +131,12 @@ namespace PDMCProject
             }
         }
 
+        private void button2_Click(object sender, RibbonControlEventArgs e)
+        {
+            string keyword = wordApp.Selection.Words.Application.Selection.Text;
+            UserControl1 user = new UserControl1(keyword);
+            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "关键词搜索");
+            ctp.Visible = true;
+        }
     }
 }

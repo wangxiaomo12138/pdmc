@@ -77,6 +77,7 @@ namespace PDMCProject
                 Microsoft.Office.Interop.Word.Document doc = null;
                 object unknow = Type.Missing;
                 object file = path;
+                //打开缓存的文件
                 doc = app.Documents.Open(ref file,
                 ref unknow, ref unknow, ref unknow, ref unknow,
                 ref unknow, ref unknow, ref unknow, ref unknow,
@@ -98,8 +99,11 @@ namespace PDMCProject
                     }
 
                 }
-                
+                //获取标题信息
                 this.detail.Text = sb.ToString();
+                //关闭已打开的文档
+                app.Documents.Close(unknow, unknow, file);
+                //删除临时文件夹下所有文件
                 Ribbon1.DeleteDir(currPath+"/temp");
             }   
             if (e.ColumnIndex == 0)
