@@ -75,16 +75,23 @@ namespace PDMCProject
                 {
                     JObject data = JObject.Parse(result.GetValue("data").ToString());
                     JObject basic = JObject.Parse(data.GetValue("basic_info").ToString());
-                    string fileName = data.GetValue("file_name").ToString().Split('.')[1];
+                    object fileName = data.GetValue("file_name");
                     JavaScriptSerializer Serializer = new JavaScriptSerializer();
                     List<VersionDto> list = Serializer.Deserialize<List<VersionDto>>(data.GetValue("version").ToString());
-                    DetailPage detail = new DetailPage(basic.GetValue("document_name").ToString(),
-                        basic.GetValue("process").ToString(),
-                        basic.GetValue("process_type").ToString(),
-                        list,fileName
-                        );
-                    ctp = Globals.ThisAddIn.CustomTaskPanes.Add(detail, "文档详情");
-                    ctp.Visible = true;
+                    if (null == fileName || (null != fileName && list.Count == 0))
+                    {
+                        ListDetail_Click( sender,e);
+                    }
+                    else
+                    {
+                        DetailPage detail = new DetailPage(basic.GetValue("document_name").ToString(),
+                           basic.GetValue("process").ToString(),
+                           basic.GetValue("process_type").ToString(),
+                           list, fileName.ToString().Split('.')[1]
+                           );
+                        ctp = Globals.ThisAddIn.CustomTaskPanes.Add(detail, "文档详情");
+                        ctp.Visible = true;
+                    }
                 }
             }
         }

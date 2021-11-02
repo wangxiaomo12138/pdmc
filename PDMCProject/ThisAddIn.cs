@@ -27,6 +27,12 @@ namespace PDMCProject
         public string downLoadUrl = "http://localhost:8081/img";
         public string base64PublicKey = "MyKey";
         public string privateKey;
+        public UserControl1 user;
+        Office.CommandBarButton newControl;
+        Office.CommandBarButton newContro2;
+        Office.CommandBarPopup pop;
+
+
 
         Word.Application wordApp;
         Microsoft.Office.Tools.CustomTaskPane ctp;
@@ -37,21 +43,19 @@ namespace PDMCProject
             Office.CommandBar bar = bars["Text"];
             bar.Reset();
             Office.CommandBarControls controls = bar.Controls;
-            Office.CommandBarPopup pop = (Office.CommandBarPopup)controls.Add(Office.MsoControlType.msoControlPopup, missing, "test", 1, true);
+            pop = (Office.CommandBarPopup)controls.Add(Office.MsoControlType.msoControlPopup, missing, "test", 1, true);
             pop.Caption = "文件助手";
             Office.CommandBarControls popControl = pop.Controls;
-
-            Office.CommandBarButton newControl =
+           newControl =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
             newControl.Caption = "关键词搜索";
             //添加按钮点击事件
             newControl.Click += newControl_Click;
-            Office.CommandBarButton newContro2 =
+            newContro2 =
                 (Office.CommandBarButton)popControl.Add(Office.MsoControlType.msoControlButton, missing, missing, missing, true);
             newContro2.Caption = "标题搜索";
             //添加按钮点击事件
-            newContro2.Click += newContro2_Click;
-            
+            newContro2.Click += newContro2_Click;  
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -61,9 +65,18 @@ namespace PDMCProject
         private void newControl_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
         {
             string keyword = wordApp.Selection.Words.Application.Selection.Text;
-            UserControl1 user = new UserControl1(keyword);
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "关键词搜索");
-            ctp.Visible = true;
+            if(null == user)
+            {
+                user = new UserControl1(keyword);
+                user.Width = 700;
+                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
+                ctp.Visible = true;
+            }
+            else
+            {
+                user.keyWord.Text = keyword;
+                ctp.Visible = true;
+            }
         }
         //按标题搜索按钮点击事件
         public void newContro2_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
@@ -103,7 +116,7 @@ namespace PDMCProject
             }
             else
             {
-                key = FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, int.Parse(sec.Paragraphs.First.OutlineLevel.ToString()), list);
+                key = FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage,(int)sec.Paragraphs.First.OutlineLevel, list);
             }
             string[] split = key.Split(';');
             for(int i = split.Length-1;i >= 0; i--)
@@ -117,9 +130,18 @@ namespace PDMCProject
                     keyword += (split[i]);
                 }
             }
-            UserControl1 user = new UserControl1(keyword);
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文本搜索");
-            ctp.Visible = true;
+            if (null == user)
+            {
+                user = new UserControl1(keyword);
+                user.Width = 700;
+                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
+                ctp.Visible = true;
+            }
+            else
+            { 
+                user.keyWord.Text = keyword;
+                ctp.Visible = true;
+            }
         }
 
         public static string FindFather(string key ,int currentLine,int currentPage,int currentLevel,List<OutLineInfo> list)

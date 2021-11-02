@@ -158,6 +158,7 @@ namespace PDMCProject
             // 
             this.detail.Location = new System.Drawing.Point(49, 340);
             this.detail.Name = "detail";
+            this.detail.ReadOnly = true;
             this.detail.Size = new System.Drawing.Size(679, 388);
             this.detail.TabIndex = 7;
             this.detail.Text = "";

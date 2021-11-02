@@ -203,7 +203,7 @@ namespace PDMCProject
         #endregion
 
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox keyWord;
+        public System.Windows.Forms.TextBox keyWord;
         private System.Windows.Forms.TextBox page;
         private System.Windows.Forms.Label totalPage;
         private System.Windows.Forms.LinkLabel up;

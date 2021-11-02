@@ -64,8 +64,14 @@ namespace PDMCProject
             MessageBox.Show(e.ColumnIndex.ToString());
             if (e.ColumnIndex == 2)
             {
+                if(!fileName.Equals("doc") && !fileName.Equals("docx"))
+                {
+                    MessageBox.Show("暂只支持word文档在线解析");
+                    return;
+                }
                 //获取当前文件夹路径
-                string currPath = System.Windows.Forms.Application.StartupPath;
+                //string currPath = System.Windows.Forms.Application.StartupPath;
+                string currPath = "D://";
                 VersionDto v = listRedis.ToArray()[e.RowIndex];
                 JObject jb = new JObject();
                 jb.Add("hash_code", Globals.ThisAddIn.userInfo);
@@ -91,10 +97,16 @@ namespace PDMCProject
                     if (!style_Word.Equals("wdOutlineLevelBodyText"))
                     {
                         string str = item.Range.Text;
+                        string index = item.Range.ListFormat.ListString;
                         object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
                         object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
                         string name = str.Replace("\r","");
                         name = name.Replace("\f", "");
+                        if (!string.IsNullOrEmpty(index))
+                        {
+                            name = name.Replace(index, "");
+                            name = index + " " + name;
+                        }
                         sb.AppendLine(name);
                     }
 
