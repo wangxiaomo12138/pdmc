@@ -38,18 +38,26 @@ namespace PDMCProject
             List<ThisAddIn.OutLineInfo> list = new List<ThisAddIn.OutLineInfo>();
             foreach (Paragraph item in doc.Paragraphs)
             {
-                string style_Word = item.OutlineLevel.ToString();
-                if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                int style_Word = (int)item.OutlineLevel;
+                if ((int)sec.Paragraphs.First.OutlineLevel == style_Word && item.Range.Text.Equals(sec.Paragraphs.First.Range.Text))
+                {
+                    break;
+                }
+                if (style_Word != 10)
                 {
                     string str = item.Range.Text;
                     object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-                    object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                    object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
                     ThisAddIn.OutLineInfo info = new ThisAddIn.OutLineInfo();
                     info.name = str.Replace("\r", "");
                     info.name = info.name.Replace("\f", "");
                     info.lineNum = int.Parse(num.ToString());
                     info.pageNum = int.Parse(page.ToString());
-                    info.level = int.Parse(item.OutlineLevel.ToString().Replace("wdOutlineLevel", ""));
+                    info.level = (int)item.OutlineLevel;
+                    if (info.pageNum > currentPage)
+                    {
+                        break;
+                    }
                     list.Add(info);
                 }
 

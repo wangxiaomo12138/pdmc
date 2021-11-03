@@ -15,6 +15,11 @@ namespace PDMCProject
 {
     public partial class ListDetail : UserControl
     {
+        private string holeTitle;
+        private string holeAuthor;
+        private string holeCategory;
+        private string holeFrom;
+        private string holeUrl;
         Microsoft.Office.Tools.CustomTaskPane ctp;
         public ListDetail()
         {
@@ -24,11 +29,36 @@ namespace PDMCProject
         public ListDetail(string title,string author,string category,string from,string url)
         {
             InitializeComponent();
+            if (string.IsNullOrEmpty(title))
+            {
+                title = "None";
+            }
+            if (string.IsNullOrEmpty(author))
+            {
+                author = "None";
+            }
+            if (string.IsNullOrEmpty(category))
+            {
+                category = "None";
+            }
+            if (string.IsNullOrEmpty(from))
+            {
+                from = "None";
+            }
+            if (string.IsNullOrEmpty(url))
+            {
+                url = "None";
+            }
+            this.holeTitle = title;
+            this.holeAuthor = author;
+            this.holeCategory = category;
+            this.holeFrom = from;
+            this.holeUrl = url;
             this.title.Text = title;
             this.author.Text = author;
-            this.category.Text = category;
+            this.category.Text = category.Length > 6 ? category.Substring(0,5)+"..." : category;
             this.from.Text = from;
-            this.url.Text = url;
+            this.url.Text = url.Length > 30 ? url.Substring(0, 29) + "..." : url;
         }
         private void ListDetail_Click(object sender, EventArgs e)
         {
@@ -94,6 +124,41 @@ namespace PDMCProject
                     }
                 }
             }
+        }
+
+        private void ListDetail_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void title_MouseEnter(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.title, "tttttttttt");
+        }
+
+        private void category_MouseEnter(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.category, this.holeCategory);
+        }
+
+        private void from_MouseEnter(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.from, this.holeFrom);
+        }
+
+        private void url_MouseEnter(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.url, this.holeUrl);
+        }
+
+        private void title_MouseEnter_1(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.title, this.holeTitle);
+        }
+
+        private void author_MouseEnter(object sender, EventArgs e)
+        {
+            this.toolTip1.SetToolTip(this.author, this.holeAuthor);
         }
     }
 }

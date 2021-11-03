@@ -83,8 +83,9 @@ namespace PDMCProject
         {
             //string keyword = wordApp.Selection.Words.Application.Selection.Text;
             string keyword = null;
+            //获取当前位置行号
             Word.Selection sec = wordApp.Selection.Words.Application.Selection;
-            object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+            object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber  );
             object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
             int currentLine = int.Parse(a.ToString());
             int currentPage = int.Parse(b.ToString());
@@ -93,18 +94,26 @@ namespace PDMCProject
             List<OutLineInfo> list = new List<OutLineInfo>();
             foreach (Paragraph item in doc.Paragraphs)
             {
-                string style_Word = item.OutlineLevel.ToString();
-                if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                int style_Word = (int)item.OutlineLevel;
+                if ((int)sec.Paragraphs.First.OutlineLevel == style_Word && item.Range.Text.Equals(sec.Paragraphs.First.Range.Text))
                 {
-                    string str = item.Range.Text;
+                    break;
+                }
+                if (style_Word != 10)
+                {
+                    string str = item.Range.Text;                  
                     object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-                    object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                    object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
                     OutLineInfo info = new OutLineInfo();
                     info.name = str.Replace("\r","");
                     info.name = info.name.Replace("\f", "");
                     info.lineNum = int.Parse(num.ToString());
                     info.pageNum = int.Parse(page.ToString());
-                    info.level = int.Parse(item.OutlineLevel.ToString().Replace("wdOutlineLevel", ""));
+                    info.level = (int)item.OutlineLevel;
+                    if (info.pageNum > currentPage)
+                    {
+                        break;
+                    }
                     list.Add(info);
                 }
 
@@ -150,27 +159,32 @@ namespace PDMCProject
             for (int i = list.Count -1; i >= 0 ; i--)
             {
                 OutLineInfo now = list.ElementAt(i);
-                if(now.pageNum > currentPage)
+                if(now.level < currentLevel)
                 {
-                    continue;
+                    sb.Append(now.name + ";");
+                    return FindFather(sb.ToString(), now.lineNum, now.pageNum, now.level, list);
                 }
-                if(now.pageNum == currentPage && i != 0)
-                {
-                    OutLineInfo next = list.ElementAt(i-1);
-                    if(((now.lineNum >= currentLine && next.lineNum <= currentLine) || now.lineNum < currentLine) && currentLevel > next.level) 
-                    {
-                       sb.Append(next.name + ";");
-                       return FindFather(sb.ToString(), next.lineNum, next.pageNum, next.level, list);
-                    }
-                }
-                if (now.pageNum < currentPage && i != 0)
-                {
-                    if(currentLevel > now.level)
-                    {
-                        sb.Append(now.name + ";");
-                        return FindFather(sb.ToString(), now.lineNum, now.pageNum, now.level, list);
-                    }
-                }
+                //if(now.pageNum > currentPage)
+                //{
+                //    continue;
+                //}
+                //if(now.pageNum == currentPage && i != 0)
+                //{
+                //    OutLineInfo next = list.ElementAt(i-1);
+                //    if(((now.lineNum >= currentLine && next.lineNum <= currentLine) || now.lineNum < currentLine) && currentLevel > next.level) 
+                //    {
+                //       sb.Append(next.name + ";");
+                //       return FindFather(sb.ToString(), next.lineNum, next.pageNum, next.level, list);
+                //    }
+                //}
+                //if (now.pageNum < currentPage && i != 0)
+                //{
+                //    if(currentLevel > now.level)
+                //    {
+                //        sb.Append(now.name + ";");
+                //        return FindFather(sb.ToString(), now.lineNum, now.pageNum, now.level, list);
+                //    }
+                //}
             }
             return sb.ToString();
         }
