@@ -36,6 +36,7 @@ namespace PDMCProject
             MessageBox.Show(a.ToString());
             Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
             List<ThisAddIn.OutLineInfo> list = new List<ThisAddIn.OutLineInfo>();
+            string name = doc.Name.Split('.')[0];
             foreach (Paragraph item in doc.Paragraphs)
             {
                 int style_Word = (int)item.OutlineLevel;
@@ -83,6 +84,7 @@ namespace PDMCProject
                     keyword += (split[i]);
                 }
             }
+            keyword = name + ";" + keyword; 
             UserControl1 user = new UserControl1(keyword);
             ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "标题搜索");
             ctp.Visible = true;

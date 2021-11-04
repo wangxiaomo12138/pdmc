@@ -60,7 +60,7 @@ namespace PDMCProject
             this.from.Text = from;
             this.url.Text = url.Length > 30 ? url.Substring(0, 29) + "..." : url;
         }
-        private void ListDetail_Click(object sender, EventArgs e)
+        public void ListDetail_Click(object sender, EventArgs e)
         {
             if (!this.from.Text.Equals("PDMC+"))
             {
@@ -80,26 +80,12 @@ namespace PDMCProject
                 if ("400".Equals(split[1]))
                 {
                     //返回登录超时，采用缓存中的信息后台静默登录；
-                    MessageBox.Show(result.GetValue("msg").ToString());
-                    JObject jb1 = new JObject();
-                    jb1.Add("username", Globals.ThisAddIn.username);
-                    jb1.Add("user_password", Globals.ThisAddIn.user_password);
-                    JObject result1 = HttpClient.Login(Globals.ThisAddIn.loginUrl, jb1.ToString());
-                    string[] split1 = result1.GetValue("code").ToString().Split('_');
-                    if (!"200".Equals(split1[1]))
+                    if (LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password) != 200)
                     {
-                        MessageBox.Show(result.GetValue("msg").ToString());
-                        LoginForm loginFrom = new LoginForm();
-                        loginFrom.Show();
+                        LoginForm login = new LoginForm();
+                        login.Show();
                     }
-                    else
-                    {
-                        MessageBox.Show(result.GetValue("msg").ToString());
-                        JObject data = (JObject)result.GetValue("data");
-                        Globals.ThisAddIn.userInfo = data.GetValue("hash_code").ToString();
-                        ListDetail_Click(sender, e);
-                    }
-
+                    ListDetail_Click(sender, e);
                 }
                 if ("200".Equals(split[1]))
                 {

@@ -9,6 +9,7 @@ using Microsoft.Office.Tools.Word;
 using System.Windows.Forms;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Word;
+using Newtonsoft.Json.Linq;
 
 namespace PDMCProject
 {
@@ -20,7 +21,15 @@ namespace PDMCProject
         //获取查询列表结果接口
         public string getListUrl = "http://localhost:8081/list";
         //登陆接口地址
-        public string loginUrl = "http://localhost:8081/login";
+        //public string loginUrl = "http://localhost:8081/login";
+//新增加的接口
+        //SSO登录接口 
+        public string ssoLogin = "http://xxx.xxx.xxx.xxx:10000/v1/search/sslogin";
+        //PDMC登录接口
+        public string pdmcLogin = "http://xxx.xxx.xxx.xxx:10000/v1/search/pdmclogin";
+        //PDMC验证码验证接口
+        public string pdmcVerify = "http://xxx.xxx.xxx.xxx:10000/v1/search/pdmcloginverify";
+
         //文档详情地址
         public string detailUrl = "http://localhost:8081/detail";
         //下载文件接口地址
@@ -188,7 +197,8 @@ namespace PDMCProject
             }
             return sb.ToString();
         }
-
+      
+        
         public class OutLineInfo
         {
             public string name { get; set; }

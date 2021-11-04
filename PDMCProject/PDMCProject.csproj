@@ -236,6 +236,12 @@
     <Compile Include="ListDetail.Designer.cs">
       <DependentUpon>ListDetail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Verify_login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Verify_login.Designer.cs">
+      <DependentUpon>Verify_login.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ListDetail.resx">
       <DependentUpon>ListDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -259,6 +265,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DetailPage.resx">
       <DependentUpon>DetailPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Verify_login.resx">
+      <DependentUpon>Verify_login.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="PDMCProject_TemporaryKey.pfx" />

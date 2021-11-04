@@ -52,26 +52,13 @@ namespace PDMCProject
                     if ("400".Equals(split[1]))
                     {
                         //返回登录超时，采用缓存中的信息后台静默登录；
-                        MessageBox.Show(result.GetValue("msg").ToString());
-                        JObject jb1 = new JObject();
-                        jb1.Add("username", Globals.ThisAddIn.username);
-                        jb1.Add("user_password", Globals.ThisAddIn.user_password);
-                        JObject result1 = HttpClient.Login(Globals.ThisAddIn.loginUrl, jb1.ToString());
-                        string[] split1 = result1.GetValue("code").ToString().Split('_');
-                        if (!"200".Equals(split1[1]))
+                        //返回登录超时，采用缓存中的信息后台静默登录；
+                        if (LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password) != 200)
                         {
-                            MessageBox.Show(result.GetValue("msg").ToString());
-                            LoginForm loginFrom = new LoginForm();
-                            loginFrom.Show();
+                            LoginForm login = new LoginForm();
+                            login.Show();
                         }
-                        else
-                        {
-                            MessageBox.Show(result.GetValue("msg").ToString());
-                            JObject data = (JObject)result.GetValue("data");
-                            Globals.ThisAddIn.userInfo = data.GetValue("hash_code").ToString();
-                            button1_Click(sender, e);
-                        }
-
+                        dataGridView1_CellContentClick(sender, e);
                     }
                     if ("200".Equals(split[1]))
                     {
@@ -132,26 +119,12 @@ namespace PDMCProject
                 if ("400".Equals(split[1]))
                 {
                     //返回登录超时，采用缓存中的信息后台静默登录；
-                    MessageBox.Show(result.GetValue("msg").ToString());
-                    JObject jb1 = new JObject();
-                    jb1.Add("username", Globals.ThisAddIn.username);
-                    jb1.Add("user_password", Globals.ThisAddIn.user_password);
-                    JObject result1 = HttpClient.Login(Globals.ThisAddIn.loginUrl, jb1.ToString());
-                    string[] split1 = result1.GetValue("code").ToString().Split('_');
-                    if (!"200".Equals(split1[1]))
+                     if(LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password) != 200)
                     {
-                        MessageBox.Show(result.GetValue("msg").ToString());
-                        LoginForm loginFrom = new LoginForm();
-                        loginFrom.Show();
+                        LoginForm login = new LoginForm();
+                        login.Show();
                     }
-                    else
-                    {
-                        MessageBox.Show(result.GetValue("msg").ToString());
-                        JObject data = (JObject)result.GetValue("data");
-                        Globals.ThisAddIn.userInfo = data.GetValue("hash_code").ToString();
-                        button1_Click(sender, e);
-                    }
-
+                     button1_Click(sender, e);
                 }
                 if ("200".Equals(split[1]))
                 {
@@ -252,7 +225,16 @@ namespace PDMCProject
                 string[] split = result.GetValue("code").ToString().Split('_');
                 if (!"200".Equals(split[1]))
                 {
-                    MessageBox.Show(result.GetValue("msg").ToString());
+                    if ("400".Equals(split[1]))
+                    {
+                        //返回登录超时，采用缓存中的信息后台静默登录；
+                        if (LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password) != 200)
+                        {
+                            LoginForm login = new LoginForm();
+                            login.Show();
+                        }
+                        up_LinkClicked(sender, e);
+                    }
                 }
                 else
                 {
@@ -311,7 +293,16 @@ namespace PDMCProject
                 string[] split = result.GetValue("code").ToString().Split('_');
                 if (!"200".Equals(split[1]))
                 {
-                    MessageBox.Show(result.GetValue("msg").ToString());
+                    if ("400".Equals(split[1]))
+                    {
+                        //返回登录超时，采用缓存中的信息后台静默登录；
+                        if (LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password) != 200)
+                        {
+                            LoginForm login = new LoginForm();
+                            login.Show();
+                        }
+                        down_LinkClicked(sender, e);
+                    }
                 }
                 else
                 {
