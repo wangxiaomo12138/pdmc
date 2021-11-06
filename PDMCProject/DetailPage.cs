@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
@@ -78,45 +79,62 @@ namespace PDMCProject
                 jb.Add("file_url", v.Link);
                 this.detail.Visible = true;
                 this.detail.Text = "正在解析，请稍等";
-                string path = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, currPath, jb.ToString(), this.name + v.Version + "." + fileName,1);
-                Word.Application app = new Microsoft.Office.Interop.Word.Application();
-                Microsoft.Office.Interop.Word.Document doc = null;
-                object unknow = Type.Missing;
-                object file = path;
-                //打开缓存的文件
-                doc = app.Documents.Open(ref file,
-                ref unknow, ref unknow, ref unknow, ref unknow,
-                ref unknow, ref unknow, ref unknow, ref unknow,
-                ref unknow, ref unknow, ref unknow, ref unknow,
-                ref unknow, ref unknow, ref unknow);
-                StringBuilder sb = new StringBuilder();
-                foreach (Paragraph item in doc.Paragraphs)
+                JObject downloadResult = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, currPath, jb.ToString(), this.name + v.Version + "." + fileName,1);
+                string code = downloadResult.GetValue("code").ToString().Split('_')[2];
+                if ("200".Equals(code))
                 {
-                    
-                    string style_Word = item.OutlineLevel.ToString();
-                    if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                    string path = downloadResult.GetValue("data").ToString();
+                    while (null == path)
                     {
-                        string str = item.Range.Text;
-                        string index = item.Range.ListFormat.ListString;
-                        object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-                        object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
-                        string name = str.Replace("\r","");
-                        name = name.Replace("\f", "");
-                        if (!string.IsNullOrEmpty(index))
-                        {
-                            name = name.Replace(index, "");
-                            name = index + " " + name;
-                        }
-                        sb.AppendLine(name);
+                        Thread.Sleep(1000);
                     }
+                    Word.Application app = new Microsoft.Office.Interop.Word.Application();
+                    Microsoft.Office.Interop.Word.Document doc = null;
+                    object unknow = Type.Missing;
+                    object file = path;
+                    //打开缓存的文件
+                    doc = app.Documents.Open(ref file,
+                    ref unknow, ref unknow, ref unknow, ref unknow,
+                    ref unknow, ref unknow, ref unknow, ref unknow,
+                    ref unknow, ref unknow, ref unknow, ref unknow,
+                    ref unknow, ref unknow, ref unknow);
+                    StringBuilder sb = new StringBuilder();
+                    foreach (Paragraph item in doc.Paragraphs)
+                    {
 
+                        string style_Word = item.OutlineLevel.ToString();
+                        if (!style_Word.Equals("wdOutlineLevelBodyText"))
+                        {
+                            string str = item.Range.Text;
+                            string index = item.Range.ListFormat.ListString;
+                            object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                            object num = item.Range.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                            string name = str.Replace("\r", "");
+                            name = name.Replace("\f", "");
+                            if (!string.IsNullOrEmpty(index))
+                            {
+                                name = name.Replace(index, "");
+                                name = index + " " + name;
+                            }
+                            sb.AppendLine(name);
+                        }
+
+                    }
+                    //获取标题信息
+                    this.detail.Text = sb.ToString();
+                    //关闭已打开的文档
+                    app.Documents.Close(unknow, unknow, file);
+                    //删除临时文件夹下所有文件
+                    Ribbon1.DeleteDir(currPath + "/temp");
+                }else if ("400".Equals(code))
+                {
+                    LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password);
+                    dataGridView1_CellContentClick_1(sender, e);
+                }else
+                {
+                    MessageBox.Show(downloadResult.GetValue("msg").ToString());
                 }
-                //获取标题信息
-                this.detail.Text = sb.ToString();
-                //关闭已打开的文档
-                app.Documents.Close(unknow, unknow, file);
-                //删除临时文件夹下所有文件
-                Ribbon1.DeleteDir(currPath+"/temp");
+               
             }   
             if (e.ColumnIndex == 0)
             {
@@ -141,8 +159,22 @@ namespace PDMCProject
                 JObject jb = new JObject();
                 jb.Add("hash_code",Globals.ThisAddIn.userInfo);
                 jb.Add("file_url",v.Link);
-                string result = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString(),this.name+v.Version+"."+fileName,0);
-                MessageBox.Show(result + "下载成功！");
+                JObject downloadResult = HttpClient.HttpDownloadFile(Globals.ThisAddIn.downLoadUrl, defaultPath, jb.ToString(),this.name+v.Version+"."+fileName,0);
+                string code = downloadResult.GetValue("code").ToString().Split('_')[2];
+                if ("200".Equals(code))
+                {
+                    MessageBox.Show(downloadResult.GetValue("data").ToString() + "下载成功！");
+                }
+                else if ("400".Equals(code))
+                {
+                    LoginForm.Login(Globals.ThisAddIn.username, Globals.ThisAddIn.user_password);
+                    dataGridView1_CellContentClick_1(sender, e);
+                }
+                else
+                {
+                    MessageBox.Show(downloadResult.GetValue("msg").ToString());
+                }
+
             }
         }
 
