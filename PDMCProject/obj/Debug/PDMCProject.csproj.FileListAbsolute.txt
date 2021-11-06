@@ -139,4 +139,4 @@ Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Doc.xml
 Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.License.xml
 Y:\Desktop\github\pdmc\PDMCProject\bin\Debug\Spire.Pdf.xml
 F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.Verify_login.resources
-F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.csproj.CopyComplete
+F:\360MoveData\Users\Administrator\Desktop\github\pdmc\PDMCProject\obj\Debug\PDMCProject.csproj.AssemblyReference.cache

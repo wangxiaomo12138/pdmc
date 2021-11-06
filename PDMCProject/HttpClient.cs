@@ -91,7 +91,7 @@ namespace PDMCProject
         }
 
 
-        public static string HttpDownloadFile(string url, string path,string value,string fileName,int type)
+        public static JObject HttpDownloadFile(string url, string path,string value,string fileName,int type)
         {
             // 设置参数
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
@@ -105,40 +105,64 @@ namespace PDMCProject
             }
 
             HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-            //直到request.GetResponse()程序才开始向目标网页发送Post请求
-            Stream responseStream = response.GetResponseStream();
-            //创建本地文件写入流
-
-            //获取当前文件夹路径
-            string currPath = Application.StartupPath;
-            string subPath = null;
-            //检查是否存在文件夹
-            if (0 == type)
+            string isStream = response.Headers.Get("Content-Type");
+            //判断返回类型是否为文件流
+            if (isStream.Equals("application/octet-stream"))
             {
-                subPath = path;
+                //直到request.GetResponse()程序才开始向目标网页发送Post请求
+                Stream responseStream = response.GetResponseStream();
+                //创建本地文件写入流
+
+                //获取当前文件夹路径
+                string currPath = Application.StartupPath;
+                string subPath = null;
+                //检查是否存在文件夹
+                if (0 == type)
+                {
+                    subPath = path;
+                }
+                else
+                {
+                    subPath = path + "/temp/" + GetTimeStamp();
+                }
+                if (false == System.IO.Directory.Exists(subPath))
+                {
+                    //创建pic文件夹
+                    System.IO.Directory.CreateDirectory(subPath);
+                }
+                //确认创建文件夹是否成功，如果不成功，则直接在当前目录保
+
+                Stream stream = new FileStream(subPath + "/" + fileName, FileMode.Create, FileAccess.ReadWrite);
+                byte[] bArr = new byte[1024];
+                int size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                while (size > 0)
+                {
+                    stream.Write(bArr, 0, size);
+                    size = responseStream.Read(bArr, 0, (int)bArr.Length);
+                }
+                stream.Close();
+                responseStream.Close();
+                JObject result = new JObject();
+                result.Add("code", "pdmc_download_200");
+                result.Add("data", subPath + "/" + fileName);
+                return result;
             }
             else
             {
-                subPath = path + "/temp/" + GetTimeStamp();
+                //普通json格式接受
+                string encoding = response.ContentEncoding;
+                if (encoding == null || encoding.Length < 1)
+                {
+                    encoding = "UTF-8"; //默认编码  
+                }
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(encoding));
+                string retString = reader.ReadToEnd();
+                //解析josn
+                JObject jo = JObject.Parse(retString);
+                return jo;
             }
-            if (false == System.IO.Directory.Exists(subPath))
-            {
-                //创建pic文件夹
-                System.IO.Directory.CreateDirectory(subPath);
-            }
-            //确认创建文件夹是否成功，如果不成功，则直接在当前目录保
+
             
-            Stream stream = new FileStream(subPath  + "/" +fileName, FileMode.Create,FileAccess.ReadWrite);
-            byte[] bArr = new byte[1024];
-            int size = responseStream.Read(bArr, 0, (int)bArr.Length);
-            while (size > 0)
-            {
-                stream.Write(bArr, 0, size);
-                size = responseStream.Read(bArr, 0, (int)bArr.Length);
-            }
-            stream.Close();
-            responseStream.Close();
-            return subPath+"/"+fileName;
         }
 
         public static string get_uft8(string unicodeString)
