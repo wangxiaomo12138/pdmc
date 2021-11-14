@@ -85,7 +85,7 @@ namespace PDMCProject
                 }
             }
             keyword = name + ";" + keyword; 
-            UserControl1 user = new UserControl1(keyword);
+            UserControl1 user = new UserControl1(keyword,false);
             ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "标题搜索");
             ctp.Visible = true;
         }
@@ -144,7 +144,7 @@ namespace PDMCProject
         private void button2_Click(object sender, RibbonControlEventArgs e)
         {
             string keyword = wordApp.Selection.Words.Application.Selection.Text;
-            UserControl1 user = new UserControl1(keyword);
+            UserControl1 user = new UserControl1(keyword,false);
             ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "关键词搜索");
             ctp.Visible = true;
         }

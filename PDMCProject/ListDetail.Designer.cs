@@ -38,6 +38,7 @@ namespace PDMCProject
             this.category = new System.Windows.Forms.TextBox();
             this.title = new System.Windows.Forms.TextBox();
             this.author = new System.Windows.Forms.TextBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -109,6 +110,8 @@ namespace PDMCProject
             this.title.Size = new System.Drawing.Size(150, 14);
             this.title.TabIndex = 10;
             this.title.UseWaitCursor = true;
+            this.title.Click += new System.EventHandler(this.title_Click);
+            this.title.TextChanged += new System.EventHandler(this.title_TextChanged);
             this.title.MouseEnter += new System.EventHandler(this.title_MouseEnter_1);
             // 
             // author
@@ -123,6 +126,17 @@ namespace PDMCProject
             this.author.UseWaitCursor = true;
             this.author.MouseEnter += new System.EventHandler(this.author_MouseEnter);
             // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(224, 8);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedHorizontal;
+            this.richTextBox1.Size = new System.Drawing.Size(179, 14);
+            this.richTextBox1.TabIndex = 12;
+            this.richTextBox1.Text = "";
+            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox1_LinkClicked);
+            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            // 
             // ListDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -130,6 +144,7 @@ namespace PDMCProject
             this.AutoScroll = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.CausesValidation = false;
+            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.author);
             this.Controls.Add(this.title);
             this.Controls.Add(this.from);
@@ -158,5 +173,6 @@ namespace PDMCProject
         private System.Windows.Forms.TextBox category;
         private System.Windows.Forms.TextBox title;
         private System.Windows.Forms.TextBox author;
+        private System.Windows.Forms.RichTextBox richTextBox1;
     }
 }

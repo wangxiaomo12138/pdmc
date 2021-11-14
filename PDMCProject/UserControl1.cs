@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 using static PDMCProject.DetailPage;
+using System.Collections;
+using System.Drawing;
 
 namespace PDMCProject
 {
@@ -22,10 +24,17 @@ namespace PDMCProject
             InitializeComponent();
         }
 
-        public UserControl1(string keyword)
+        public UserControl1(string keyword,Boolean flag)
         {
             InitializeComponent();
             this.keyWord.Text = keyword;
+            this.richTextBox1.LinkClicked += new
+               System.Windows.Forms.LinkClickedEventHandler
+               (this.richTextBox1_LinkClicked);
+            if (flag)
+            {
+                button1_Click(new object(), new EventArgs());
+            }
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -153,7 +162,7 @@ namespace PDMCProject
                     this.flowLayoutPanel1.Controls.Clear();
                     foreach (content c in list)
                     {
-                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url, this.keyWord.Text);
                         this.flowLayoutPanel1.Controls.Add(d);
                     }
                     this.flowLayoutPanel1.Visible = true;
@@ -255,7 +264,7 @@ namespace PDMCProject
                     this.flowLayoutPanel1.Controls.Clear();
                     foreach(content c in list)
                     {
-                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url, this.keyWord.Text);
                         this.flowLayoutPanel1.Controls.Add(d);
                     }
                 }
@@ -323,12 +332,53 @@ namespace PDMCProject
                     this.flowLayoutPanel1.Controls.Clear();
                     foreach (content c in list)
                     {
-                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url);
+                        ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url, this.keyWord.Text);
                         this.flowLayoutPanel1.Controls.Add(d);
                     }
                 }
             }
+
         }
+
+
+
+        public void changeColor(string str)
+        {
+            ArrayList list = getIndexArray(richTextBox1.Text, str);
+            for (int i = 0; i < list.Count; i++)
+            {
+                int index = (int)list[i];
+                richTextBox1.Select(index, str.Length);
+                richTextBox1.SelectionColor = Color.Blue;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputStr">标题的名称</param>
+        /// <param name="findStr">搜索的关键字</param>
+        /// <returns></returns>
+        public ArrayList getIndexArray(String inputStr, String findStr)
+        {
+            ArrayList list = new ArrayList();
+            int start = 0;
+            while (start < inputStr.Length)
+            {
+                int index = inputStr.IndexOf(findStr, start);
+                if (index >= 0)
+                {
+                    list.Add(index);
+                    start = index + findStr.Length;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return list;
+        }
+
+
 
         private void totalPage_Click(object sender, EventArgs e)
         {
@@ -343,6 +393,26 @@ namespace PDMCProject
         private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+        public System.Diagnostics.Process p = new System.Diagnostics.Process();
+
+        private void richTextBox1_LinkClicked(object sender,System.Windows.Forms.LinkClickedEventArgs e)
+        {
+            // Call Process.Start method to open a browser
+            // with link text as URL.
+            
+        }
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+            //webrawer webrawer = new webrawer("http://www.baidu.com");
+            //ctp = Globals.ThisAddIn.CustomTaskPanes.Add(webrawer, "内部浏览器");
+            //ctp.Visible = true;
+
+        }
+
+        private void richTextBox1_DoubleClick(object sender, EventArgs e)
+        {
+            p = System.Diagnostics.Process.Start("https://www.baidu.com/");
         }
     }
 }

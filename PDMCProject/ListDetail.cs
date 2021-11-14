@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using static PDMCProject.DetailPage;
+using System.Collections;
+
 
 namespace PDMCProject
 {
@@ -26,7 +28,7 @@ namespace PDMCProject
             InitializeComponent();
         }
 
-        public ListDetail(string title,string author,string category,string from,string url)
+        public ListDetail(string title, string author, string category, string from, string url,string keyWord)
         {
             InitializeComponent();
             if (string.IsNullOrEmpty(title))
@@ -56,9 +58,14 @@ namespace PDMCProject
             this.holeUrl = url;
             this.title.Text = title;
             this.author.Text = author;
-            this.category.Text = category.Length > 6 ? category.Substring(0,5)+"..." : category;
+            this.category.Text = category.Length > 6 ? category.Substring(0, 5) + "..." : category;
             this.from.Text = from;
             this.url.Text = url.Length > 30 ? url.Substring(0, 29) + "..." : url;
+            //新增的高亮显示
+            this.richTextBox1.Text = title;
+            changeColor(keyWord);
+            this.richTextBox1.Refresh();
+
         }
         public void ListDetail_Click(object sender, EventArgs e)
         {
@@ -96,7 +103,7 @@ namespace PDMCProject
                     List<VersionDto> list = Serializer.Deserialize<List<VersionDto>>(data.GetValue("version").ToString());
                     if (null == fileName || (null != fileName && list.Count == 0))
                     {
-                        ListDetail_Click( sender,e);
+                        ListDetail_Click(sender, e);
                     }
                     else
                     {
@@ -114,7 +121,7 @@ namespace PDMCProject
 
         private void ListDetail_Load(object sender, EventArgs e)
         {
-
+            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox1_LinkClicked);
         }
 
         private void title_MouseEnter(object sender, EventArgs e)
@@ -146,5 +153,71 @@ namespace PDMCProject
         {
             this.toolTip1.SetToolTip(this.author, this.holeAuthor);
         }
+
+        private void title_TextChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show("这是绑定的事件");
+        }
+
+
+        //对richTextBox1字体高亮显示
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        public void changeColor(string str)
+        {
+            ArrayList list = getIndexArray(richTextBox1.Text, str);
+            for (int i = 0; i < list.Count; i++)
+            {
+                int index = (int)list[i];
+                richTextBox1.Select(index, str.Length);
+                richTextBox1.SelectionColor = Color.Blue;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputStr">标题的名称</param>
+        /// <param name="findStr">搜索的关键字</param>
+        /// <returns></returns>
+        public ArrayList getIndexArray(String inputStr, String findStr)
+        {
+            ArrayList list = new ArrayList();
+            int start = 0;
+            while (start < inputStr.Length)
+            {
+                int index = inputStr.IndexOf(findStr, start);
+                if (index >= 0)
+                {
+                    list.Add(index);
+                    start = index + findStr.Length;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return list;
+        }
+        public System.Diagnostics.Process p = new System.Diagnostics.Process();
+        private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            
+        }
+
+        private void title_Click(object sender, EventArgs e)
+        {
+            p = System.Diagnostics.Process.Start(this.holeUrl);
+           
+            webrawer webrawer = new webrawer(this.holeUrl);
+            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(webrawer, "内部浏览器");
+            ctp.Visible = true;
+        }
     }
 }
+
+
+
+
+

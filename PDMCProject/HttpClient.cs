@@ -20,7 +20,7 @@ namespace PDMCProject
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(serviceAddress);
             request.Method = "POST";
             request.ContentType = "application/json";
-            string strContent = @"{ ""mmmm"": ""89e"",""nnnnnn"": ""0101943"",""kkkkkkk"": ""e8sodijf9""}";
+            //string strContent = @"{ ""mmmm"": ""89e"",""nnnnnn"": ""0101943"",""kkkkkkk"": ""e8sodijf9""}";
             using (StreamWriter dataStream = new StreamWriter(request.GetRequestStream()))
             {
                 dataStream.Write(value);

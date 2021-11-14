@@ -242,6 +242,12 @@
     <Compile Include="Verify_login.Designer.cs">
       <DependentUpon>Verify_login.cs</DependentUpon>
     </Compile>
+    <Compile Include="webrawer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="webrawer.Designer.cs">
+      <DependentUpon>webrawer.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="ListDetail.resx">
       <DependentUpon>ListDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -268,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Verify_login.resx">
       <DependentUpon>Verify_login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="webrawer.resx">
+      <DependentUpon>webrawer.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="PDMCProject_TemporaryKey.pfx" />

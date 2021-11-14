@@ -76,7 +76,7 @@ namespace PDMCProject
             string keyword = wordApp.Selection.Words.Application.Selection.Text;
             if(null == user)
             {
-                user = new UserControl1(keyword);
+                user = new UserControl1(keyword,true);
                 user.Width = 700;
                 ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
                 ctp.Visible = true;
@@ -150,7 +150,7 @@ namespace PDMCProject
             }
             if (null == user)
             {
-                user = new UserControl1(keyword);
+                user = new UserControl1(keyword, true);
                 user.Width = 700;
                 ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
                 ctp.Visible = true;
