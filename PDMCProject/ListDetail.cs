@@ -11,7 +11,7 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using static PDMCProject.DetailPage;
 using System.Collections;
-
+using System.Threading;
 
 namespace PDMCProject
 {
@@ -22,7 +22,9 @@ namespace PDMCProject
         private string holeCategory;
         private string holeFrom;
         private string holeUrl;
-        Microsoft.Office.Tools.CustomTaskPane ctp;
+        private static string urlAddress;
+        static Microsoft.Office.Tools.CustomTaskPane ctp;
+        private static Boolean flag = false;
         public ListDetail()
         {
             InitializeComponent();
@@ -47,10 +49,19 @@ namespace PDMCProject
             {
                 from = "None";
             }
+            else
+            {
+                if (!from.Equals("PDMC+"))
+                {
+                    //visable = false
+
+                }
+            }
             if (string.IsNullOrEmpty(url))
             {
                 url = "None";
             }
+           
             this.holeTitle = title;
             this.holeAuthor = author;
             this.holeCategory = category;
@@ -67,16 +78,12 @@ namespace PDMCProject
             this.richTextBox1.Refresh();
 
         }
-        public void ListDetail_Click(object sender, EventArgs e)
+        public static  void getDetail()
         {
-            if (!this.from.Text.Equals("PDMC+"))
-            {
-                MessageBox.Show("暂时无法解析该地址");
-            }
-            else
+            try
             {
                 JObject param = new JObject();
-                param.Add("file_url", this.url.Text);
+                param.Add("file_url", urlAddress);
                 param.Add("hash_code", Globals.ThisAddIn.userInfo);
                 JObject result = HttpClient.Post(Globals.ThisAddIn.detailUrl, param.ToString());
                 string[] split = result.GetValue("code").ToString().Split('_');
@@ -92,7 +99,7 @@ namespace PDMCProject
                         LoginForm login = new LoginForm();
                         login.Show();
                     }
-                    ListDetail_Click(sender, e);
+                    getDetail();
                 }
                 if ("200".Equals(split[1]))
                 {
@@ -103,7 +110,7 @@ namespace PDMCProject
                     List<VersionDto> list = Serializer.Deserialize<List<VersionDto>>(data.GetValue("version").ToString());
                     if (null == fileName || (null != fileName && list.Count == 0))
                     {
-                        ListDetail_Click(sender, e);
+                        getDetail();
                     }
                     else
                     {
@@ -115,7 +122,38 @@ namespace PDMCProject
                         ctp = Globals.ThisAddIn.CustomTaskPanes.Add(detail, "文档详情");
                         ctp.Visible = true;
                     }
+
                 }
+                flag = false;
+            }catch(Exception e)
+            {
+
+            }
+            finally
+            {
+                flag = false;
+            }
+        }
+
+        public void ListDetail_Click(object sender, EventArgs e)
+
+        {
+            if (flag)
+            {
+                MessageBox.Show("请勿重复点击");
+                return;
+            }
+            if (!this.from.Text.Equals("PDMC+"))
+            {
+                MessageBox.Show("暂时无法解析该地址");
+            }
+            else
+            {
+                string urlAddress = this.url.Text;
+                ThreadStart thread = new ThreadStart(getDetail);
+                Thread childThread = new Thread(thread);
+                childThread.Start();
+                flag = true;
             }
         }
 
