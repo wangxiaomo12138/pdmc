@@ -54,7 +54,7 @@ namespace PDMCProject
             JObject jb = new JObject();
             jb.Add("username", username);
             jb.Add("user_password", password);
-            JObject result = HttpClient.Login(Globals.ThisAddIn.ssoLogin, jb.ToString());
+            JObject result = HttpClient.Login(Globals.ThisAddIn.loginUrl, jb.ToString());
             string[] split = result.GetValue("code").ToString().Split('_');
             //自己写的
             if ("500".Equals(split[1]))
@@ -77,27 +77,27 @@ namespace PDMCProject
                 Globals.ThisAddIn.userInfo = data.GetValue("hash_code").ToString();
                 Globals.ThisAddIn.username = username;
                 Globals.ThisAddIn.user_password = password;
-                //传输hash_code
-                JObject jb1 = new JObject();
-                jb1.Add("hash_code", Globals.ThisAddIn.userInfo);
-                //调用PDMC登录接口
-                JObject pdmcLogin_result = HttpClient.Login(Globals.ThisAddIn.pdmcLogin, jb1.ToString());
-                string[] split1 = pdmcLogin_result.GetValue("code").ToString().Split('_');
+                ////传输hash_code
+                //JObject jb1 = new JObject();
+                //jb1.Add("hash_code", Globals.ThisAddIn.userInfo);
+                ////调用PDMC登录接口
+                //JObject pdmcLogin_result = HttpClient.Login(Globals.ThisAddIn.pdmcLogin, jb1.ToString());
+                //string[] split1 = pdmcLogin_result.GetValue("code").ToString().Split('_');
 
-                if ("400".Equals(split1[2]))
-                {
-                    //MessageBox.Show(result.GetValue("msg").ToString());
-                    MessageBox.Show("认证失败，请重现输入");
-                }
-                if ("500".Equals(split1[2]))
-                {
-                    MessageBox.Show("后端服务异常");
-                }
-                else
-                {
-                    Verify_login verify = new Verify_login();
-                    verify.Show();
-                }
+                //if ("400".Equals(split1[2]))
+                //{
+                //    //MessageBox.Show(result.GetValue("msg").ToString());
+                //    MessageBox.Show("认证失败，请重现输入");
+                //}
+                //if ("500".Equals(split1[2]))
+                //{
+                //    MessageBox.Show("后端服务异常");
+                //}
+                //else
+                //{
+                //    Verify_login verify = new Verify_login();
+                //    verify.Show();
+                //}
                 return 200;
             }
 

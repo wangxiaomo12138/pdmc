@@ -23,12 +23,14 @@ namespace PDMCProject
         private string holeFrom;
         private string holeUrl;
         private static string urlAddress;
-        static Microsoft.Office.Tools.CustomTaskPane ctp;
+        Microsoft.Office.Tools.CustomTaskPane ctp;
         private static Boolean flag = false;
         public ListDetail()
         {
             InitializeComponent();
         }
+
+
 
         public ListDetail(string title, string author, string category, string from, string url,string keyWord)
         {
@@ -78,7 +80,7 @@ namespace PDMCProject
             this.richTextBox1.Refresh();
 
         }
-        public static  void getDetail()
+        public void getDetail()
         {
             try
             {
@@ -114,13 +116,16 @@ namespace PDMCProject
                     }
                     else
                     {
-                        DetailPage detail = new DetailPage(basic.GetValue("document_name").ToString(),
+                        DetailPage.getInstence(basic.GetValue("document_name").ToString(),
                            basic.GetValue("process").ToString(),
                            basic.GetValue("process_type").ToString(),
-                           list, fileName.ToString().Split('.')[1]
-                           );
-                        ctp = Globals.ThisAddIn.CustomTaskPanes.Add(detail, "文档详情");
-                        ctp.Visible = true;
+                           list, fileName.ToString().Split('.')[1]);
+                        //DetailPage detail = new DetailPage(basic.GetValue("document_name").ToString(),
+                        //   basic.GetValue("process").ToString(),
+                        //   basic.GetValue("process_type").ToString(),
+                        //   list, fileName.ToString().Split('.')[1]
+                        //   );
+                       
                     }
 
                 }
@@ -138,11 +143,11 @@ namespace PDMCProject
         public void ListDetail_Click(object sender, EventArgs e)
 
         {
-            if (flag)
-            {
-                MessageBox.Show("请勿重复点击");
-                return;
-            }
+            //if (flag)
+            //{
+            //    MessageBox.Show("请勿重复点击");
+            //    return;
+            //}
             if (!this.from.Text.Equals("PDMC+"))
             {
                 MessageBox.Show("暂时无法解析该地址");
@@ -150,9 +155,7 @@ namespace PDMCProject
             else
             {
                 string urlAddress = this.url.Text;
-                ThreadStart thread = new ThreadStart(getDetail);
-                Thread childThread = new Thread(thread);
-                childThread.Start();
+                getDetail();
                 flag = true;
             }
         }
@@ -194,7 +197,7 @@ namespace PDMCProject
 
         private void title_TextChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("这是绑定的事件");
+            //MessageBox.Show("这是绑定的事件");
         }
 
 

@@ -17,7 +17,7 @@ namespace PDMCProject
         public int pageNum = 1;
         public JObject redisData;
         public string keyword;
-        Microsoft.Office.Tools.CustomTaskPane ctp;
+        public static Microsoft.Office.Tools.CustomTaskPane ctp;
         public List<content> contentList;
         public UserControl1()
         {
@@ -99,12 +99,12 @@ namespace PDMCProject
             //获取addin中userIfon的信息，如果为空则为未登录跳转登录页面
            if(Globals.ThisAddIn.userInfo == null)
             {
-                LoginForm loginFrom = new LoginForm();
-                loginFrom.Show();
+                //LoginForm loginFrom = new LoginForm();
+                //loginFrom.Show();
+                LoginForm.Login("admin", "123456");
             }
             //已经登录过，直接调用接口
-            else
-            {
+         
                 //调用接口过程
                 JObject jb = new JObject();
                 jb.Add("key_word", this.keyWord.Text);
@@ -174,7 +174,7 @@ namespace PDMCProject
                     this.scap.Visible = true;
                 }
                 
-            }
+            
 
 
         }
@@ -264,6 +264,7 @@ namespace PDMCProject
                     this.flowLayoutPanel1.Controls.Clear();
                     foreach(content c in list)
                     {
+                       
                         ListDetail d = new ListDetail(c.title, c.author, c.category, c.from, c.url, this.keyWord.Text);
                         this.flowLayoutPanel1.Controls.Add(d);
                     }

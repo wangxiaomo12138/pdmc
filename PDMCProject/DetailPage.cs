@@ -20,10 +20,30 @@ namespace PDMCProject
         List<VersionDto> listRedis;
         string name;
         string fileName;
+        private static DetailPage dp = null;
+        static Microsoft.Office.Tools.CustomTaskPane ctp;
+
         public DetailPage()
         {
             InitializeComponent();
         }
+
+
+        public static void  getInstence(string documentName, string process, string processType, List<VersionDto> dataList, string fileName)
+        {
+            if(null == dp)
+            {
+                dp = new DetailPage( documentName,  process,  processType,  dataList,  fileName);
+                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(dp, "文档详情");
+                ctp.Visible = true;
+            }
+            else
+            {
+                dp = new DetailPage(documentName, process, processType, dataList, fileName);
+                ctp.Visible = true;
+            }
+        }
+       
         public DetailPage(string documentName, string process, string processType, List<VersionDto> dataList,string fileName)
         {
             InitializeComponent();

@@ -18,6 +18,7 @@ namespace PDMCProject
 
         public Word.Application wordApp;
         Microsoft.Office.Tools.CustomTaskPane ctp;
+        UserControl1 user = null;
         
         private void Ribbon1_Load(object sender, RibbonUIEventArgs e)
         {
@@ -70,24 +71,35 @@ namespace PDMCProject
             }
             else
             {
-                key = ThisAddIn.FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, int.Parse(sec.Paragraphs.First.OutlineLevel.ToString()), list);
+                key = ThisAddIn.FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, ((int)sec.Paragraphs.First.OutlineLevel), list);
             }
-            string[] split = key.Split(';');
-            for (int i = split.Length - 1; i >= 0; i--)
+            keyword = key;
+            //string[] split = key.Split(';');
+            //for (int i = split.Length - 1; i >= 0; i--)
+            //{
+            //    if (null != split[i] && !"".Equals(split[i]) && i != 0)
+            //    {
+            //        keyword += (split[i] + ";");
+            //    }
+            //    if (null != split[i] && !"".Equals(split[i]) && i == 0)
+            //    {
+            //        keyword += (split[i]);
+            //    }
+            //}
+            //keyword = name + ";" + keyword;
+            if (null == user)
             {
-                if (null != split[i] && !"".Equals(split[i]) && i != 0)
-                {
-                    keyword += (split[i] + ";");
-                }
-                if (null != split[i] && !"".Equals(split[i]) && i == 0)
-                {
-                    keyword += (split[i]);
-                }
+                user = new UserControl1(keyword, false);
+                user.Width = 700;
+                user.keyWord.Text = keyword;
+                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
+                ctp.Visible = true;
             }
-            keyword = name + ";" + keyword; 
-            UserControl1 user = new UserControl1(keyword,false);
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "标题搜索");
-            ctp.Visible = true;
+            else
+            {
+                user.keyWord.Text = keyword;
+                ctp.Visible = true;
+            }
         }
 
         private void button3_Click(object sender, RibbonControlEventArgs e)
@@ -144,9 +156,19 @@ namespace PDMCProject
         private void button2_Click(object sender, RibbonControlEventArgs e)
         {
             string keyword = wordApp.Selection.Words.Application.Selection.Text;
-            UserControl1 user = new UserControl1(keyword,false);
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "关键词搜索");
-            ctp.Visible = true;
+            if (null == user)
+            {
+                user = new UserControl1(keyword, false);
+                user.Width = 700;
+                user.keyWord.Text = keyword;
+                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
+                ctp.Visible = true;
+            }
+            else
+            {
+                user.keyWord.Text = keyword;
+                ctp.Visible = true;
+            }
         }
     }
 }
