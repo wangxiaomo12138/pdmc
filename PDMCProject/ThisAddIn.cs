@@ -37,7 +37,8 @@ namespace PDMCProject
         public string downLoadUrl = "http://localhost:8081/img";
         public string base64PublicKey = "MyKey";
         public string privateKey;
-        public UserControl1 user;
+        public UserControl1 bUser;
+        public UserControl1 kUser;
         Office.CommandBarButton newControl;
         Office.CommandBarButton newContro2;
         Office.CommandBarPopup pop;
@@ -46,7 +47,8 @@ namespace PDMCProject
 
 
         Word.Application wordApp;
-        Microsoft.Office.Tools.CustomTaskPane ctp;
+        Microsoft.Office.Tools.CustomTaskPane biaoti;
+        Microsoft.Office.Tools.CustomTaskPane guanjianzi;
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             wordApp = Globals.ThisAddIn.Application;
@@ -68,7 +70,7 @@ namespace PDMCProject
             newContro2.Caption = "标题搜索";
             //添加按钮点击事件
             newContro2.Click += newContro2_Click;
-            //wordApp.WindowSelectionChange += new Word.ApplicationEvents4_WindowSelectionChangeEventHandler(Application_WindowSelectionChange);
+            wordApp.WindowSelectionChange += new Word.ApplicationEvents4_WindowSelectionChangeEventHandler(Application_WindowSelectionChange);
         }
 
         void Application_WindowSelectionChange(Word.Selection Sel)
@@ -131,18 +133,19 @@ namespace PDMCProject
             //        keyword += (split[i]);
             //    }
             //}
-            if (null == user)
-            {
-                user = new UserControl1(keyword, true);
-                user.Width = 700;
-                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-                ctp.Visible = true;
-            }
-            else
-            {
-                user.keyWord.Text = keyword;
-                ctp.Visible = true;
-            }
+            //if (null == user)
+            //{
+            //    user = new UserControl1(keyword, true,"1");
+            //    user.Width = 700;
+            //    ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
+            //    ctp.Visible = true;
+            //}
+            //else
+            //{
+            //    user.keyWord.Text = keyword;
+            //    ctp.Visible = true;
+            //}
+            showBiaoti(keyword);
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -153,27 +156,15 @@ namespace PDMCProject
 
         private void addControlMain(string keyword, UserControl1 u)
         {
-            user.keyWord.Text = keyword;
-            ctp = Globals.ThisAddIn.CustomTaskPanes.Add(u, "文件助手");
-            ctp.Visible = true;
+            //user.keyWord.Text = keyword;
+            //ctp = Globals.ThisAddIn.CustomTaskPanes.Add(u, "文件助手");
+            //ctp.Visible = true;
         }
         //按关键词搜索按钮事件
         private void newControl_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
         {
-            string keyword = wordApp.Selection.Words.Application.Selection.Text;
-            if(null == user)
-            {
-                user = new UserControl1(keyword,true);
-                user.Width = 700;
-                user.keyWord.Text = keyword;
-                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-                ctp.Visible = true;
-            }
-            else
-            {
-                user.keyWord.Text = keyword;
-                ctp.Visible = true;
-            }
+            string word = wordApp.Selection.Words.Application.Selection.Text;
+            showKey(word);
         }
 
         public void getDetail(Object p)
@@ -249,18 +240,8 @@ namespace PDMCProject
             //        keyword += (split[i]);
             //    }
             //}
-            if (null == user)
-            {
-                user = new UserControl1(keyword, true);
-                user.Width = 700;
-                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-                ctp.Visible = true;
-            }
-            else
-            { 
-                user.keyWord.Text = keyword;
-                ctp.Visible = true;
-            }
+            showBiaoti(keyword);
+            
         }
 
         public static string FindFather(string key ,int currentLine,int currentPage,int currentLevel,List<OutLineInfo> list)
@@ -279,8 +260,51 @@ namespace PDMCProject
             }
             return sb.ToString();
         }
-      
-        
+
+
+
+        public void showBiaoti(string keyword)
+        {
+            if (null != guanjianzi)
+            {
+                guanjianzi.Visible = false;
+            }
+            if (bUser == null)
+            {
+                bUser = new UserControl1(keyword, true, "2");
+
+                biaoti = Globals.ThisAddIn.CustomTaskPanes.Add(bUser, "标题搜索");
+            }
+            else
+            {
+                bUser.keyWord.Text = keyword;
+            }
+            biaoti.Width = 700;
+            biaoti.Visible = true;
+        }
+
+
+        public void showKey(string keyword)
+        {
+            if (null != biaoti)
+            {
+                biaoti.Visible = false;
+            }
+            if (null == kUser)
+            {
+                kUser = new UserControl1(keyword, true, "1");
+
+                guanjianzi = Globals.ThisAddIn.CustomTaskPanes.Add(kUser, "关键词搜索");
+                guanjianzi.Width = 700;
+            }
+            else
+            {
+                kUser.keyWord.Text = keyword;
+            }
+            guanjianzi.Visible = true;
+        }
+
+
         public class OutLineInfo
         {
             public string name { get; set; }

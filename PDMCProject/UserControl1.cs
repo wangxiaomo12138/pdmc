@@ -19,18 +19,20 @@ namespace PDMCProject
         public string keyword;
         public static Microsoft.Office.Tools.CustomTaskPane ctp;
         public List<content> contentList;
+        public string choice;
         public UserControl1()
         {
             InitializeComponent();
         }
 
-        public UserControl1(string keyword,Boolean flag)
+        public UserControl1(string keyword, Boolean flag, string choice)
         {
             InitializeComponent();
             this.keyWord.Text = keyword;
             this.richTextBox1.LinkClicked += new
                System.Windows.Forms.LinkClickedEventHandler
                (this.richTextBox1_LinkClicked);
+            this.choice = choice;
             if (flag)
             {
                 button1_Click(new object(), new EventArgs());
@@ -118,7 +120,16 @@ namespace PDMCProject
                 }
                 
                 jb.Add("hash_code", Globals.ThisAddIn.userInfo);
-                JObject result = HttpClient.getList(Globals.ThisAddIn.getListUrl, jb.ToString());
+            string requestUrl = null;
+            if(choice.Equals("1"))
+            {
+                requestUrl = Globals.ThisAddIn.getListUrl;
+            }
+            else
+            {
+                requestUrl = Globals.ThisAddIn.getListUrl;
+            }
+                JObject result = HttpClient.getList(requestUrl, jb.ToString());
                 string[] split = result.GetValue("code").ToString().Split('_');
                 if ("500".Equals(split[1]))
                 {

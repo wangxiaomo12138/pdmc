@@ -87,19 +87,7 @@ namespace PDMCProject
             //    }
             //}
             //keyword = name + ";" + keyword;
-            if (null == user)
-            {
-                user = new UserControl1(keyword, false);
-                user.Width = 700;
-                user.keyWord.Text = keyword;
-                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-                ctp.Visible = true;
-            }
-            else
-            {
-                user.keyWord.Text = keyword;
-                ctp.Visible = true;
-            }
+            Globals.ThisAddIn.showBiaoti(keyword);
         }
 
         private void button3_Click(object sender, RibbonControlEventArgs e)
@@ -156,19 +144,7 @@ namespace PDMCProject
         private void button2_Click(object sender, RibbonControlEventArgs e)
         {
             string keyword = wordApp.Selection.Words.Application.Selection.Text;
-            if (null == user)
-            {
-                user = new UserControl1(keyword, false);
-                user.Width = 700;
-                user.keyWord.Text = keyword;
-                ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-                ctp.Visible = true;
-            }
-            else
-            {
-                user.keyWord.Text = keyword;
-                ctp.Visible = true;
-            }
+            Globals.ThisAddIn.showKey(keyword);
         }
     }
 }
