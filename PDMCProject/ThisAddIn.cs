@@ -19,6 +19,7 @@ namespace PDMCProject
         public string userInfo;
         public string username;
         public string user_password;
+        public string titles ;
         //获取查询列表结果接口
         public string getListUrl = "http://localhost:8081/list";
         //登陆接口地址
@@ -75,52 +76,54 @@ namespace PDMCProject
 
         void Application_WindowSelectionChange(Word.Selection Sel)
         {
-            string keyword = null;
-            //获取当前位置行号
-            Word.Selection sec = Sel;
-            object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
-            object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-            int currentLine = int.Parse(a.ToString());
-            int currentPage = int.Parse(b.ToString());
-            MessageBox.Show(a.ToString());
-            Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
-            List<OutLineInfo> list = new List<OutLineInfo>();
-            foreach (Paragraph item in doc.Paragraphs)
-            {
-                int style_Word = (int)item.OutlineLevel;
-                if ((int)sec.Paragraphs.First.OutlineLevel == style_Word && item.Range.Text.Equals(sec.Paragraphs.First.Range.Text))
+            
+                string keyword = null;
+                //获取当前位置行号
+                Word.Selection sec = Sel;
+                object a = sec.get_Information(Word.WdInformation.wdFirstCharacterLineNumber);
+                object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                int currentLine = int.Parse(a.ToString());
+                int currentPage = int.Parse(b.ToString());
+                //MessageBox.Show(a.ToString());
+                Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
+                List<OutLineInfo> list = new List<OutLineInfo>();
+                foreach (Paragraph item in doc.Paragraphs)
                 {
-                    break;
-                }
-                if (style_Word != 10)
-                {
-                    string str = item.Range.Text;
-                    object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-                    object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
-                    OutLineInfo info = new OutLineInfo();
-                    info.name = str.Replace("\r", "");
-                    info.name = info.name.Replace("\f", "");
-                    info.lineNum = int.Parse(num.ToString());
-                    info.pageNum = int.Parse(page.ToString());
-                    info.level = (int)item.OutlineLevel;
-                    if (info.pageNum > currentPage)
+                    int style_Word = (int)item.OutlineLevel;
+                    if ((int)sec.Paragraphs.First.OutlineLevel == style_Word && item.Range.Text.Equals(sec.Paragraphs.First.Range.Text))
                     {
                         break;
                     }
-                    list.Add(info);
+                    if (style_Word != 10)
+                    {
+                        string str = item.Range.Text;
+                        object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                        object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
+                        OutLineInfo info = new OutLineInfo();
+                        info.name = str.Replace("\r", "");
+                        info.name = info.name.Replace("\f", "");
+                        info.lineNum = int.Parse(num.ToString());
+                        info.pageNum = int.Parse(page.ToString());
+                        info.level = (int)item.OutlineLevel;
+                        if (info.pageNum > currentPage)
+                        {
+                            break;
+                        }
+                        list.Add(info);
+                    }
+
+                }
+                string key = null;
+                if (sec.Paragraphs.First.OutlineLevel.ToString().Equals("wdOutlineLevelBodyText"))
+                {
+                    key = FindFather(key, currentLine, currentPage, 10, list);
+                }
+                else
+                {
+                    key = FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, (int)sec.Paragraphs.First.OutlineLevel, list);
                 }
 
-            }
-            string key = null;
-            if (sec.Paragraphs.First.OutlineLevel.ToString().Equals("wdOutlineLevelBodyText"))
-            {
-                key = FindFather(key, currentLine, currentPage, 10, list);
-            }
-            else
-            {
-                key = FindFather(sec.Paragraphs.First.Range.Text, currentLine, currentPage, (int)sec.Paragraphs.First.OutlineLevel, list);
-            }
-            keyword = key;
+                keyword = key;
             //string[] split = key.Split(';');
             //for(int i = split.Length-1;i >= 0; i--)
             //{
@@ -145,7 +148,24 @@ namespace PDMCProject
             //    user.keyWord.Text = keyword;
             //    ctp.Visible = true;
             //}
-            showBiaoti(keyword);
+            if (this.titles == null && !string.IsNullOrEmpty(keyword))
+            {
+                showBiaoti(keyword);
+                this.titles = keyword;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(keyword) && this.titles.Equals(keyword))
+                {
+                    return;
+                }
+                if (!string.IsNullOrEmpty(keyword) && !this.titles.Equals(keyword))
+                {
+                    showBiaoti(keyword);
+                    this.titles = keyword;
+                }
+            }
+            
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
