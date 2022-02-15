@@ -73,7 +73,44 @@ namespace PDMCProject
             newContro2.Click += newContro2_Click;
             wordApp.WindowSelectionChange += new Word.ApplicationEvents4_WindowSelectionChangeEventHandler(Application_WindowSelectionChange);
         }
-
+        //2022 2-15 向上获取标题列表递归
+        public List<OutLineInfo> GetTitleList(Range range)//range参数为鼠标选定的上一个段落范围
+        {
+            //初始化标题列表
+            List<OutLineInfo> list = new List<OutLineInfo>();
+            //循环range中所有的段落
+            foreach(Paragraph item in range.Paragraphs)
+            {
+                //获取段落大纲级别
+                int style_Word = (int)item.OutlineLevel;
+                if (style_Word != 10)
+                {
+                    //确定标题级别装载对象
+                    string str = item.Range.Text;
+                    object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
+                    object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
+                    OutLineInfo info = new OutLineInfo();
+                    info.name = str.Replace("\r", "");
+                    info.name = info.name.Replace("\f", "");
+                    info.lineNum = int.Parse(num.ToString());
+                    info.pageNum = int.Parse(page.ToString());
+                    info.level = (int)item.OutlineLevel;
+                    list.Add(info);
+                }
+            }
+            //如果list中没有数据并且当前段落存在上一段递归获取list
+            if(list.Count() == 0 && null != range.Previous())
+            {
+                return GetTitleList(range.Previous());
+            }
+            else
+            {
+                //如果list存在元素直接返回list
+                return list;
+            }
+           
+        }
+        //2022 02 15 改良获取上级标题方法
         void Application_WindowSelectionChange(Word.Selection Sel)
         {
             
@@ -84,36 +121,10 @@ namespace PDMCProject
                 object b = sec.get_Information(Word.WdInformation.wdActiveEndPageNumber);
                 int currentLine = int.Parse(a.ToString());
                 int currentPage = int.Parse(b.ToString());
-                //MessageBox.Show(a.ToString());
-                Microsoft.Office.Interop.Word.Document doc = Globals.ThisAddIn.Application.ActiveDocument;//获取当前最新一个打开的文档           
-                List<OutLineInfo> list = new List<OutLineInfo>();
-                foreach (Paragraph item in doc.Paragraphs)
-                {
-                    int style_Word = (int)item.OutlineLevel;
-                    if ((int)sec.Paragraphs.First.OutlineLevel == style_Word && item.Range.Text.Equals(sec.Paragraphs.First.Range.Text))
-                    {
-                        break;
-                    }
-                    if (style_Word != 10)
-                    {
-                        string str = item.Range.Text;
-                        object page = item.Range.get_Information(Word.WdInformation.wdActiveEndPageNumber);
-                        object num = item.Range.get_Information(WdInformation.wdFirstCharacterLineNumber);
-                        OutLineInfo info = new OutLineInfo();
-                        info.name = str.Replace("\r", "");
-                        info.name = info.name.Replace("\f", "");
-                        info.lineNum = int.Parse(num.ToString());
-                        info.pageNum = int.Parse(page.ToString());
-                        info.level = (int)item.OutlineLevel;
-                        if (info.pageNum > currentPage)
-                        {
-                            break;
-                        }
-                        list.Add(info);
-                    }
-
-                }
+                //获取上一个最近的标题列表                                                                                //
+                List<OutLineInfo> list = GetTitleList(sec.Previous());
                 string key = null;
+                //根据当前页数行号确定最近的标题
                 if (sec.Paragraphs.First.OutlineLevel.ToString().Equals("wdOutlineLevelBodyText"))
                 {
                     key = FindFather(key, currentLine, currentPage, 10, list);
@@ -124,48 +135,7 @@ namespace PDMCProject
                 }
 
                 keyword = key;
-            //string[] split = key.Split(';');
-            //for(int i = split.Length-1;i >= 0; i--)
-            //{
-            //    if(null != split[i] && !"".Equals(split[i]) && i != 0)
-            //    {
-            //        keyword += (split[i] + ";");
-            //    }
-            //    if (null != split[i] && !"".Equals(split[i]) && i == 0)
-            //    {
-            //        keyword += (split[i]);
-            //    }
-            //}
-            //if (null == user)
-            //{
-            //    user = new UserControl1(keyword, true,"1");
-            //    user.Width = 700;
-            //    ctp = Globals.ThisAddIn.CustomTaskPanes.Add(user, "文件助手");
-            //    ctp.Visible = true;
-            //}
-            //else
-            //{
-            //    user.keyWord.Text = keyword;
-            //    ctp.Visible = true;
-            //}
-            if (this.titles == null && !string.IsNullOrEmpty(keyword))
-            {
-                showBiaoti(keyword);
-                this.titles = keyword;
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(keyword) && this.titles.Equals(keyword))
-                {
-                    return;
-                }
-                if (!string.IsNullOrEmpty(keyword) && !this.titles.Equals(keyword))
-                {
-                    showBiaoti(keyword);
-                    this.titles = keyword;
-                }
-            }
-            
+            MessageBox.Show(keyword);
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
